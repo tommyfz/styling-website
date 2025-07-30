@@ -1,47 +1,34 @@
+// src/components/Navbar.tsx
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const Navbar = () => {
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Portfolio", href: "/portfolio" },
+  { name: "Contact", href: "/contact" },
+];
+
+export default function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Toggle the hamburger menu
-  const toggleMenu = () => setIsOpen(!isOpen);
-
   return (
-    <nav className="p-4 bg-white shadow-md sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Left Links for Desktop */}
-        <div className="hidden md:flex space-x-6">
-          <Link href="/" className="text-gray-700 hover:text-gray-900">
-            Home
+    <nav className="sticky top-0 z-50 bg-white border-b shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between">
+        {/* Mobile: Top section with hamburger + logo */}
+        <div className="flex justify-between md:hidden items-center w-full mb-2">
+          <Link href="/">
+            {/* <Image src="/logo.png" alt="Logo" width={120} height={40} /> */}
           </Link>
-          <Link href={"/about"} className="text-gray-700 hover:text-gray-900">
-            About
-          </Link>
-        </div>
-
-        {/* Logo in the center */}
-        <div className="flex-shrink-0">
-          {/* <img src="/path/to/your/logo.png" alt="Styling Site Logo" className="h-8 w-auto" /> */}
-        </div>
-
-        {/* Right Links for Desktop */}
-        <div className="hidden md:flex space-x-6">
-          <Link href="/portfolio" className="text-gray-700 hover:text-gray-900">
-            Portfolio
-          </Link>
-          <Link href="/contact" className="text-gray-700 hover:text-gray-900">
-            Contact
-          </Link>
-        </div>
-
-        {/* Hamburger Menu */}
-        <div className="md:hidden">
           <button
-            onClick={toggleMenu}
             className="text-gray-800 focus:outline-none"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -59,32 +46,65 @@ const Navbar = () => {
             </svg>
           </button>
         </div>
-      </div>
 
-      {/* Mobile View */}
-      <div
-        className={`md:hidden ${isOpen ? "block" : "hidden"} bg-gray-100 p-4`}
-      >
-        {/* Logo for Mobile */}
-        <div className="text-xl font-semibold text-gray-800 text-center mb-4">
-          {/* <img src="/path/to/your/logo.png" alt="Styling Site Logo" className="h-8 w-auto" /> */}
+        {/* Desktop nav layout */}
+        <div className="hidden md:flex flex-1 justify-between items-center">
+          {/* Left nav links */}
+          <div className="flex gap-6">
+            {navLinks.slice(0, 2).map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`font-medium hover:text-black ${
+                  pathname === link.href ? "text-black" : "text-gray-700"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Logo in center */}
+          <div>
+            <Link href="/">
+              {/* <Image src="/logo.png" alt="Logo" width={120} height={40} /> */}
+            </Link>
+          </div>
+
+          {/* Right nav links */}
+          <div className="flex gap-6">
+            {navLinks.slice(2).map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`font-medium hover:text-black ${
+                  pathname === link.href ? "text-black" : "text-gray-700"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
         </div>
 
-        <Link href="/" className="block text-gray-700 py-2">
-          Home
-        </Link>
-        <Link href="/about" className="block text-gray-700 py-2">
-          About
-        </Link>
-        <Link href="/portfolio" className="block text-gray-700 py-2">
-          Portfolio
-        </Link>
-        <Link href="/contact" className="block text-gray-700 py-2">
-          Contact
-        </Link>
+        {/* Mobile nav dropdown */}
+        {isOpen && (
+          <div className="md:hidden mt-2 flex flex-col gap-2 items-center bg-gray-50 rounded p-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={`font-medium hover:text-black ${
+                  pathname === link.href ? "text-black" : "text-gray-700"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
